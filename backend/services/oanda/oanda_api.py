@@ -1,8 +1,13 @@
 # oanda_api.py
 import json
 import requests
+import pandas as pd
+import os
+import pickle
 from defs import ACCOUNT_ID, API_KEY, OANDA_URL, SECURE_HEADER
 from forex_pairs import ForexPairsGenerator
+from fundamental import TradingIndicators
+from datetime import datetime
 
 class OandaAPI:
     def __init__(self, api_key=API_KEY, account_id=ACCOUNT_ID, base_url=OANDA_URL):
@@ -23,16 +28,53 @@ class OandaAPI:
         url = f"{self.base_url}/accounts/{self.account_id}/instruments"
         response = requests.get(url, headers=self._get_headers())
         return response.json()
-
-    def get_price(self, instrument):
+    
+    def get_historical_data(self, instrument, granularity="D", count=500):
         url = f"{self.base_url}/instruments/{instrument}/candles"
         params = {
-            "granularity": "D",
-            "count": 1
+            "granularity": granularity,
+            "count": count,
+            "price": "M"  # Midpoint prices
         }
         response = requests.get(url, headers=self._get_headers(), params=params)
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch historical data: {response.text}")
         return response.json()
 
+    def save_historical_data(self, instrument, data, granularity, count, folder="backend/history_data"):
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        file_path = os.path.join(folder, f"{instrument}_{granularity}_{count}.pkl")
+        with open(file_path, "wb") as file:
+            pickle.dump(data, file)
+
+    def load_historical_data(self, instrument, granularity, count, folder="backend/history_data"):
+        file_path = os.path.join(folder, f"{instrument}_{granularity}_{count}.pkl")
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as file:
+                return pickle.load(file)
+        return None
+    
+    def update_historical_data(self, instrument, granularity="D", count=500):
+        existing_data = self.load_historical_data(instrument, granularity, count)
+        if existing_data:
+            last_time = existing_data['candles'][-1]['time']
+            last_time_dt = datetime.strptime(last_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+            now = datetime.now()
+            days_diff = (now - last_time_dt).days
+            if days_diff > 0:
+                new_data = self.get_historical_data(instrument, granularity=granularity, count=days_diff)
+                existing_data['candles'].extend(new_data['candles'])
+                self.save_historical_data(instrument, existing_data, granularity, count)
+        else:
+            new_data = self.get_historical_data(instrument, granularity=granularity, count=count)
+            self.save_historical_data(instrument, new_data, granularity, count)    
+        
+    def delete_historical_data(self, instrument, granularity, count, folder="backend/history_data"):
+        file_path = os.path.join(folder, f"{instrument}_{granularity}_{count}.pkl")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        
     def place_order(self, instrument, units, order_type="MARKET"):
         url = f"{self.base_url}/accounts/{self.account_id}/orders"
         data = {
@@ -86,10 +128,14 @@ class OandaAPI:
     def get_all_forex_pairs(self):
         return self.forex_pairs_generator.generate_pairs()
 
-# Example usage:
+    def get_tradable_forex_pairs(self):
+        return [instrument["name"] for instrument in self.get_instruments().get("instruments", []) if "_USD" in instrument["name"]]
+
+# Example usage
 if __name__ == "__main__":
     oanda = OandaAPI()
-
+    instrument = "EUR_USD"
+    
     # Get account details
     account_details = oanda.get_account_details()
     print("Account Details:", account_details)
@@ -97,6 +143,11 @@ if __name__ == "__main__":
     # Get available instruments
     instruments = oanda.get_instruments()
     print("Instruments:", instruments)
+
+    # Fetch and save historical data
+    historical_data = oanda.get_historical_data(instrument, granularity='granularity', count='count')
+    oanda.save_historical_data(instrument, historical_data, granularity='granularity', count='count')
+    print(f"Saved historical data for {instrument}")
 
     # Get the latest price for a specific instrument
     instrument = "EUR_USD"

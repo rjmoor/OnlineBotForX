@@ -1,24 +1,22 @@
-import React from 'react';
-import Plot from 'react-plotly.js';
+// src/App.jsx
+import React, { useState } from 'react';
+import Sidebar from './components/Sidebar';
+import AccountInfo from './components/AccountInfo';
+import AutoTrade from './components/AutoTrade';
+import Backtest from './components/Backtest';
+import './styles/styles.scss';
 
 function App() {
+  const [section, setSection] = useState('account');
+
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Backtesting Program</h1>
-        <Plot
-          data={[
-            {
-              x: [1, 2, 3, 4],
-              y: [2, 6, 3, 5],
-              type: 'scatter',
-              mode: 'lines+markers',
-              marker: { color: 'red' },
-            },
-          ]}
-          layout={{ width: 720, height: 440, title: 'A Fancy Plot' }}
-        />
-      </header>
+      <Sidebar setSection={setSection} />
+      <div className="main-content">
+        {section === 'account' && <AccountInfo />}
+        {section === 'autotrade' && <AutoTrade />}
+        {section === 'backtest' && <Backtest />}
+      </div>
     </div>
   );
 }

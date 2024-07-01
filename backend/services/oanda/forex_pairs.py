@@ -1,20 +1,13 @@
+# forex_pairs.py
 class ForexPairsGenerator:
     def __init__(self):
-        self.currencies = [
-            "USD", "EUR", "JPY", "GBP", "CHF", "CAD", "AUD", "NZD"
-        ]
+        self.base_currencies = ["USD", "EUR", "GBP", "JPY"]
+        self.quote_currencies = ["USD", "EUR", "GBP", "JPY"]
 
     def generate_pairs(self):
         pairs = []
-        for i in range(len(self.currencies)):
-            for j in range(i + 1, len(self.currencies)):
-                pairs.extend([f"{self.currencies[i]}_{self.currencies[j]}", f"{self.currencies[j]}_{self.currencies[i]}"])
+        for base in self.base_currencies:
+            for quote in self.quote_currencies:
+                if base != quote:
+                    pairs.append(f"{base}_{quote}")
         return pairs
-
-# Example usage
-if __name__ == "__main__":
-    generator = ForexPairsGenerator()
-    pairs = generator.generate_pairs()
-    print("Generated Forex Pairs:")
-    for pair in pairs:
-        print(pair)

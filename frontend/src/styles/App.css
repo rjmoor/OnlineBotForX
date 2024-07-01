@@ -1,0 +1,47 @@
+.App {
+  display: flex;
+}
+
+.main-content {
+  margin-left: 200px;
+  padding: 20px;
+  width: 100%;
+}
+/* src/styles/App.css */
+.light {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.red {
+  background-color: red;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.green {
+  background-color: green;
+}
+
+.backtest-grid {
+  display: flex;
+}
+
+.parameter-names {
+  flex: 1;
+}
+
+.indicator-selects {
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+}
+
+.indicator-selects select {
+  margin-bottom: 10px;
+}
