@@ -1,0 +1,9 @@
+
+backend/defs.py
+backend/.env
+backend/__init__.py
+backend/routes/__init__.py
+backend/services/__init__.py
+backend/services/oanda/__init__.py
+backend/services/oanda/defs.py
+frontend/.eslintrc.cjs
