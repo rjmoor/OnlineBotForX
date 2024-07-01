@@ -7,3 +7,8 @@ backend/services/__init__.py
 backend/services/oanda/__init__.py
 backend/services/oanda/defs.py
 frontend/.eslintrc.cjs
+backend/services/oanda/__pycache__/__init__.cpython-312.pyc
+/backend/services/oanda/__pycache__
+backend/services/defs.py
+/.vscode
+backend/services/oanda/.env

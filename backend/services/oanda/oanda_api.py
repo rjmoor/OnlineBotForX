@@ -4,7 +4,7 @@ import requests
 import pandas as pd
 import os
 import pickle
-from defs import ACCOUNT_ID, API_KEY, OANDA_URL, SECURE_HEADER
+from .defs import ACCOUNT_ID, API_KEY, OANDA_URL, SECURE_HEADER
 from forex_pairs import ForexPairsGenerator
 from fundamental import TradingIndicators
 from datetime import datetime

@@ -14,11 +14,11 @@ STATE_MACHINE = True  # Set to False to disable state machine control
 
 # Switches for Indicators
 SWITCHES = {
-    "RSI": True,
+    "RSI": False,
     "MACD": False,
     "SMA": True,
-    "EMA": True,
-    "BOLLINGER_BANDS": True,
+    "EMA": False,
+    "BOLLINGER_BANDS": False,
     "STOCHASTIC": False
 }
 
@@ -45,13 +45,13 @@ MACD_SIGNAL_PERIOD = 9
 
 # Simple Moving Average Indicator
 SMA_PERIOD = 50
-SMA_FAST= 10
-SMA_SLOW= 50
+SMA_FAST = 10
+SMA_SLOW = 50
 
 # Exponential Moving Average Indicator
 EMA_PERIOD = 50
-EMA_FAST= 10
-EMA_SLOW= 50
+EMA_FAST = 10
+EMA_SLOW = 50
 
 # Bollinger Bands Indicator
 BOLLINGER_BANDS_PERIOD = 20
