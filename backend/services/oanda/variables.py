@@ -33,6 +33,25 @@ SLEEP_INTERVAL = 60  # in seconds
 
 ### Additional Indicators ###
 
+CONSTANTS = {
+    'EMA_FAST': 12,
+    'EMA_SLOW': 26,
+    'SMA_FAST': 50,
+    'SMA_SLOW': 200,
+    'RSI_PERIOD': 14,
+    'MACD_SLOW': 26,
+    'MACD_FAST': 12,
+    'MACD_SIGNAL': 9,
+    'BB_PERIOD': 20,
+    'BB_STD_DEV': 2,
+    'STOCHASTIC_PERIOD': 14,
+    'STOCHASTIC_SMOOTH_K': 3,
+    'STOCHASTIC_SMOOTH_D': 3,
+    'GRANULARITY': 'D',  # 'M', 'H1', etc.
+    'CANDLES_COUNT': 100
+}
+
+
 # RSI Indicator
 RSI_PERIOD = 14
 RSI_OVERBOUGHT = 70

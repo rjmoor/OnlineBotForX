@@ -1,5 +1,6 @@
 import pandas as pd
-from fundamental import TradingIndicators
+from oanda.fundamental import TradingIndicators
+from oanda.oanda_api import OandaAPI
 
 class TradingStateMachine:
     def __init__(self, oanda_api):

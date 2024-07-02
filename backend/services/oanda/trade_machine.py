@@ -1,7 +1,7 @@
 # trade_machine.py
 import pandas as pd
 import matplotlib.pyplot as plt
-from oanda.oanda_api import OandaAPI
+from oanda_api import OandaAPI
 from fundamental import TradingIndicators
 from variables import TRADE_INSTRUMENTS, STATE_MACHINE, SWITCHES, SCENARIOS, BT_TYPE, SMA_PERIOD, EMA_PERIOD, OPTIMIZATION_RANGES
 

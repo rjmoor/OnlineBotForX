@@ -4,9 +4,9 @@ import requests
 import pandas as pd
 import os
 import pickle
-from .defs import ACCOUNT_ID, API_KEY, OANDA_URL, SECURE_HEADER
+from defs import ACCOUNT_ID, API_KEY, OANDA_URL, SECURE_HEADER
 from forex_pairs import ForexPairsGenerator
-from fundamental import TradingIndicators
+from trading_indicators import TradingIndicators
 from datetime import datetime
 
 class OandaAPI:
@@ -172,4 +172,4 @@ if __name__ == "__main__":
 
     # Get all Forex pairs
     forex_pairs = oanda.get_all_forex_pairs()
-    print("Forex Pairs:", forex_pairs)
+    print("Forex Pairs:", forex_
