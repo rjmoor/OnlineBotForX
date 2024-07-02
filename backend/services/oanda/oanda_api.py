@@ -172,4 +172,4 @@ if __name__ == "__main__":
 
     # Get all Forex pairs
     forex_pairs = oanda.get_all_forex_pairs()
-    print("Forex Pairs:", forex_
+    print("Forex Pairs:", forex_pairs)
