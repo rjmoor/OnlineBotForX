@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from oanda_api import OandaAPI
 from fundamental import TradingIndicators
 from variables import TRADE_INSTRUMENTS, STATE_MACHINE, SWITCHES, SCENARIOS, BT_TYPE, SMA_PERIOD, EMA_PERIOD, OPTIMIZATION_RANGES
+import logging
 
 class TradeMachine:
     def __init__(self, oanda_api):
@@ -11,6 +12,7 @@ class TradeMachine:
         self.state_machine_enabled = STATE_MACHINE
         self.backtesting_enabled = BT_TYPE == 'Strategy'
         self.indicator_switches = SWITCHES
+        self.initialize_states()
 
     def initialize_states(self):
         self.states = {pair: 'red' for pair in TRADE_INSTRUMENTS}
@@ -18,25 +20,41 @@ class TradeMachine:
     def update_state(self, instrument, new_state):
         self.states[instrument] = new_state
 
-    def fetch_data(self, instrument):
-        data = self.oanda_api.load_historical_data(instrument, "H1", 1000)
-        if not data:
-            data = self.oanda_api.get_historical_data(instrument, "H1", 1000)
-            self.oanda_api.save_historical_data(instrument, data, "H1", 1000)
-        return pd.DataFrame(data['candles'])
+    def fetch_data(self, instrument, granularity="H1", count=1000):
+        try:
+            data = self.oanda_api.load_historical_data(instrument, granularity, count)
+            if not data:
+                data = self.oanda_api.get_historical_data(instrument, granularity, count)
+                self.oanda_api.save_historical_data(instrument, data, granularity, count)
+            return pd.DataFrame(data['candles'])
+        except Exception as e:
+            logging.error(f"Error fetching data for {instrument}: {e}")
+            raise
 
     def process_data(self, df):
-        df['time'] = pd.to_datetime(df['time'])
-        df['close'] = df['mid']['c'].astype(float)
-        df['high'] = df['mid']['h'].astype(float)
-        df['low'] = df['mid']['l'].astype(float)
-        df['open'] = df['mid']['o'].astype(float)
-        return df
+        try:
+            df['time'] = pd.to_datetime(df['time'])
+            for col in ['c', 'h', 'l', 'o']:
+                df[col] = df['mid'][col].astype(float)
+            df.rename(columns={'c': 'close', 'h': 'high', 'l': 'low', 'o': 'open'}, inplace=True)
+            return df
+        except Exception as e:
+            logging.error(f"Error processing data: {e}")
+            raise
 
     def analyze_pair(self, instrument):
-        df = self.process_data(self.fetch_data(instrument))
-        indicators = TradingIndicators(df)
+        try:
+            df = self.process_data(self.fetch_data(instrument))
+            indicators = TradingIndicators(df)
+            scenario = SCENARIOS['LONG'] if self.states[instrument] == 'green' else SCENARIOS['SHORT']
+            for ind, settings in scenario['INDICATORS'].items():
+                if settings:
+                    self.apply_indicator(ind, indicators, scenario)
+            self.plot_indicators(df, indicators, instrument)
+        except Exception as e:
+            logging.error(f"Error analyzing pair {instrument}: {e}")
 
+    def apply_indicator(self, ind, indicators, scenario):
         # Scenario-based logic for dynamic switches
         scenario = SCENARIOS['LONG'] if self.states[instrument] == 'green' else SCENARIOS['SHORT']
         for ind, settings in scenario['INDICATORS'].items():
@@ -116,11 +134,13 @@ class TradeMachine:
         plt.show()
 
     def optimize(self):
+        logging.info('Starting optimization...')
         print("Optimizing...")
         for pair in self.states:
             data = self.fetch_data(pair)
             df = self.process_data(data)
             self.optimize_indicators(df, pair)
+        logging.info('Optimization completed.')
 
     def optimize_indicators(self, df, instrument):
         for indicator, params in OPTIMIZATION_RANGES.items():
@@ -141,3 +161,4 @@ if __name__ == "__main__":
     oanda = OandaAPI()
     trade_machine = TradeMachine(oanda)
     trade_machine.run()
+    trade_machine.optimize()

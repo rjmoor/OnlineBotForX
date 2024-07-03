@@ -1,17 +1,22 @@
-# daily_generator.py
 import argparse
-from './oanda/oanda_api.py' import OandaAPI
+import logging
+from oanda_api import OandaAPI
 
 def run_daily_generator(granularity, count):
+    """
+    Generate historical data files for Forex pairs.
+    :param granularity: Granularity of the data (e.g., 'D', 'H1').
+    :param count: Number of data points to fetch.
+    """
     oanda = OandaAPI()
     all_pairs = oanda.get_all_forex_pairs()
 
     for pair in all_pairs:
         try:
             oanda.update_historical_data(pair, granularity=granularity, count=count)
-            print(f"Updated historical data for {pair} with granularity {granularity} and count {count}")
+            logging.info(f"Updated historical data for {pair} with granularity {granularity} and count {count}")
         except Exception as e:
-            print(f"Failed to update data for {pair}: {e}")
+            logging.error(f"Failed to update data for {pair}: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate historical data files for Forex pairs.")
@@ -20,4 +25,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     run_daily_generator(args.granularity, args.count)

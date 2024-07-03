@@ -1,15 +1,17 @@
+import logging
 import time
 from datetime import datetime
+
 import pandas as pd
 import variables
-from ta.momentum import RSIIndicator
-from ta.trend import SMAIndicator, EMAIndicator, MACD
-from ta.volatility import BollingerBands
-from ta.momentum import StochasticOscillator
 from backtesting import Backtest, Strategy
 from backtesting.lib import crossover
 from logger import log_event
 from oanda_api import OandaAPI
+from ta.momentum import RSIIndicator, StochasticOscillator
+from ta.trend import MACD, EMAIndicator, SMAIndicator
+from ta.volatility import BollingerBands
+
 
 class RSIStrategy(Strategy):
     RSI_PERIOD = 14

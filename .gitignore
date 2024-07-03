@@ -12,3 +12,4 @@ backend/services/oanda/__pycache__/__init__.cpython-312.pyc
 backend/services/defs.py
 /.vscode
 backend/services/oanda/.env
+.DS_Store
